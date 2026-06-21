@@ -1,0 +1,437 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Microsoft YaHei', Arial, sans-serif;
+    background: linear-gradient(135deg, #1a4d2e 0%, #2d6a4f 100%);
+    min-height: 100vh;
+    color: #333;
+}
+
+.page {
+    width: 100%;
+    min-height: 100vh;
+}
+
+.hidden {
+    display: none !important;
+}
+
+#loginPage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-box {
+    background: white;
+    padding: 50px 60px;
+    border-radius: 15px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    min-width: 400px;
+}
+
+.login-box h1 {
+    font-size: 36px;
+    color: #1a4d2e;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    color: #888;
+    margin-bottom: 40px;
+    font-size: 16px;
+}
+
+.input-group {
+    margin-bottom: 25px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 16px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.input-group input:focus {
+    border-color: #2d6a4f;
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 14px;
+    font-size: 18px;
+    background: #2d6a4f;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-primary:hover {
+    background: #1a4d2e;
+}
+
+.error-msg {
+    color: #e74c3c;
+    margin-top: 15px;
+    font-size: 14px;
+    min-height: 20px;
+}
+
+#gamePage {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+}
+
+.game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 12px 24px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.game-info {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.phase-badge {
+    background: #f39c12;
+    color: white;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.phase-badge.playing {
+    background: #27ae60;
+}
+
+.phase-badge.waiting {
+    background: #95a5a6;
+}
+
+.trump-info, .level-info {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+}
+
+.btn-leave {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s;
+}
+
+.btn-leave:hover {
+    background: #c0392b;
+}
+
+.game-table {
+    flex: 1;
+    position: relative;
+    background: #0d5c34;
+    border-radius: 20px;
+    min-height: 450px;
+    margin-bottom: 20px;
+    border: 8px solid #0a4a29;
+}
+
+.player-slot {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 10px;
+    min-width: 120px;
+    text-align: center;
+}
+
+.player-slot.current-turn {
+    box-shadow: 0 0 0 3px #f1c40f;
+}
+
+.player-slot.is-banker .player-name::before {
+    content: "庄 ";
+    color: #f1c40f;
+    font-weight: bold;
+}
+
+.player-top {
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.player-bottom {
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.player-left {
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.player-right {
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.player-name {
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.player-cards-count {
+    color: #bdc3c7;
+    font-size: 14px;
+}
+
+.played-cards {
+    min-height: 40px;
+    margin-top: 8px;
+    display: flex;
+    gap: 3px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.played-card {
+    background: white;
+    color: #333;
+    padding: 4px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.played-card.trump {
+    background: #f1c40f;
+    color: #333;
+}
+
+.played-card.red {
+    color: #e74c3c;
+}
+
+.table-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.round-info {
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.message-area {
+    color: #f1c40f;
+    font-size: 14px;
+    min-height: 20px;
+}
+
+.hand-area {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    padding: 15px;
+}
+
+.hand-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 15px;
+    justify-content: center;
+    min-height: 80px;
+}
+
+.card {
+    background: white;
+    border-radius: 6px;
+    padding: 8px 10px;
+    min-width: 50px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+    border: 2px solid transparent;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.card.selected {
+    transform: translateY(-10px);
+    border-color: #f1c40f;
+    background: #fffbe6;
+}
+
+.card.trump {
+    background: linear-gradient(135deg, #fff 0%, #ffeaa7 100%);
+}
+
+.card.red {
+    color: #e74c3c;
+}
+
+.card.small {
+    font-size: 12px;
+    padding: 6px 8px;
+}
+
+.card-value {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.card-suit {
+    font-size: 18px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.btn-action {
+    background: #27ae60;
+    color: white;
+    border: none;
+    padding: 10px 30px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.btn-action:hover {
+    background: #219a52;
+}
+
+.btn-action:disabled {
+    background: #95a5a6;
+    cursor: not-allowed;
+}
+
+.btn-action.btn-warning {
+    background: #f39c12;
+}
+
+.btn-action.btn-warning:hover {
+    background: #e67e22;
+}
+
+.btn-action.btn-danger {
+    background: #e74c3c;
+}
+
+.btn-action.btn-danger:hover {
+    background: #c0392b;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    min-width: 350px;
+}
+
+.modal-content h3 {
+    margin-bottom: 25px;
+    color: #333;
+}
+
+.suit-selector {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-bottom: 25px;
+}
+
+.suit-btn {
+    background: #f8f9fa;
+    border: 2px solid #ddd;
+    padding: 15px 20px;
+    font-size: 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: bold;
+}
+
+.suit-btn:hover {
+    background: #e9ecef;
+    border-color: #2d6a4f;
+}
+
+.btn-cancel {
+    background: #95a5a6;
+    color: white;
+    border: none;
+    padding: 10px 30px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.btn-cancel:hover {
+    background: #7f8c8d;
+}
+
+.winning-cards {
+    animation: pulse 0.5s ease-in-out;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
