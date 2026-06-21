@@ -1,0 +1,13 @@
+com\tractor\game\GameRoom.class
+com\tractor\config\ServerRunner.class
+com\tractor\model\GamePhase.class
+com\tractor\game\CardTypeUtil.class
+com\tractor\model\Card.class
+com\tractor\model\PlayedCards.class
+com\tractor\model\Player.class
+com\tractor\model\Rank.class
+com\tractor\TractorApplication.class
+com\tractor\config\SocketIOConfig.class
+com\tractor\model\Suit.class
+com\tractor\game\DeckUtil.class
+com\tractor\socket\GameEventHandler.class

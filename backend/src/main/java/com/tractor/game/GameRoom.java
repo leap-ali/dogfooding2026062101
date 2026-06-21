@@ -218,11 +218,27 @@ public class GameRoom {
     }
 
     public synchronized boolean playCards(String playerId, List<Integer> cardIds) {
+        // #region debug-point H1-H6:play-cards-entry
+        System.out.println("[DEBUG] playCards called - playerId=" + playerId + ", cardIds=" + cardIds + ", phase=" + phase + ", currentPlayerPos=" + currentPlayerPosition + ", currentRoundSize=" + currentRound.size());
+        // #endregion
         if (phase != GamePhase.PLAYING) {
+            // #region debug-point H1:play-wrong-phase
+            System.out.println("[DEBUG] playCards rejected - wrong phase: " + phase);
+            // #endregion
             return false;
+        }
+        // BUG 2 FIX: 如果上一轮已经结束（有4张牌），先清空再开始新轮
+        if (!currentRound.isEmpty() && currentRound.size() == 4) {
+            // #region debug-point H2:play-clear-last-round
+            System.out.println("[DEBUG] playCards - clearing last round (size=4) before starting new round");
+            // #endregion
+            currentRound.clear();
         }
         Player player = getPlayerById(playerId);
         if (player == null || player.getPosition() != currentPlayerPosition) {
+            // #region debug-point H1:play-wrong-player
+            System.out.println("[DEBUG] playCards rejected - wrong player, expectedPos=" + currentPlayerPosition + ", playerPos=" + (player!=null?player.getPosition():"null"));
+            // #endregion
             return false;
         }
         List<Card> cards = new ArrayList<>();
@@ -240,7 +256,24 @@ public class GameRoom {
             PlayedCards lead = currentRound.get(0);
             String leadType = CardTypeUtil.getCardType(lead.getCards(), trumpSuit, levelRank);
             String playType = CardTypeUtil.getCardType(cards, trumpSuit, levelRank);
+            // #region debug-point H1,H6:play-follow-check
+            System.out.println("[DEBUG] playCards follow check - leadType=" + leadType + ", playType=" + playType + ", leadSize=" + lead.getCards().size() + ", playSize=" + cards.size());
+            // #endregion
             if (cards.size() != lead.getCards().size()) {
+                // #region debug-point H1:play-wrong-size
+                System.out.println("[DEBUG] playCards rejected - wrong size");
+                // #endregion
+                return false;
+            }
+            List<Card> handCardsBeforePlay = new ArrayList<>(player.getHandCards());
+            boolean validFollow = CardTypeUtil.isValidFollow(cards, lead.getCards(), handCardsBeforePlay, trumpSuit, levelRank);
+            // #region debug-point H1:play-valid-follow
+            System.out.println("[DEBUG] playCards isValidFollow=" + validFollow + ", player=" + player.getNickname());
+            // #endregion
+            if (!validFollow) {
+                // #region debug-point H1:play-invalid-follow
+                System.out.println("[DEBUG] playCards rejected - invalid follow rule");
+                // #endregion
                 return false;
             }
         }
@@ -254,8 +287,17 @@ public class GameRoom {
         
         currentRound.add(playedCards);
         player.getHandCards().removeAll(cards);
+        // #region debug-point H2:play-added
+        System.out.println("[DEBUG] playCards success - player=" + player.getNickname() + ", cards=" + cards + ", type=" + cardType + ", roundSize=" + currentRound.size());
+        // #endregion
         if (currentRound.size() == 4) {
+            // #region debug-point H2:finish-round-start
+            System.out.println("[DEBUG] playCards - 4 cards played, calling finishRound, currentRound=" + currentRound);
+            // #endregion
             finishRound();
+            // #region debug-point H2:finish-round-end
+            System.out.println("[DEBUG] playCards - finishRound done, currentRound size=" + currentRound.size() + ", nextPlayer=" + currentPlayerPosition);
+            // #endregion
         } else {
             currentPlayerPosition = (currentPlayerPosition + 1) % 4;
         }
@@ -266,8 +308,14 @@ public class GameRoom {
         PlayedCards lead = currentRound.get(0);
         int winnerPos = lead.getPosition();
         int maxPower = calculateRoundPower(lead);
+        // #region debug-point H2,H6:finish-round-lead
+        System.out.println("[DEBUG] finishRound - lead: " + lead.getNickname() + ", power=" + maxPower + ", cards=" + lead.getCards());
+        // #endregion
         for (PlayedCards pc : currentRound) {
             int power = calculateRoundPower(pc);
+            // #region debug-point H6:finish-round-power
+            System.out.println("[DEBUG] finishRound - player=" + pc.getNickname() + ", power=" + power + ", cards=" + pc.getCards() + ", canWin=" + (power >= 0));
+            // #endregion
             if (power > maxPower) {
                 maxPower = power;
                 winnerPos = pc.getPosition();
@@ -286,9 +334,22 @@ public class GameRoom {
             }
         }
         if (allEmpty) {
+            // #region debug-point H5:game-over
+            System.out.println("[DEBUG] finishRound - all cards played, GAME OVER! Resetting to WAITING...");
+            // #endregion
             phase = GamePhase.GAME_OVER;
+            // BUG 5 FIX: 对局结束后自动重置房间，恢复4人等待状态
+            resetGame();
+            // #region debug-point H5:game-over-reset
+            System.out.println("[DEBUG] finishRound - reset complete, phase now: " + phase + ", playerCount: " + players.size());
+            // #endregion
+            return;
         }
-        currentRound.clear();
+        // #region debug-point H2:finish-round-clear
+        System.out.println("[DEBUG] finishRound - NOT clearing currentRound here, will clear at next round start, winnerPos=" + winnerPos + ", allEmpty=" + allEmpty + ", currentRound size=" + currentRound.size());
+        // #endregion
+        // BUG 2 FIX: 移到下一轮出牌时clear，确保广播时前端能看到本轮出牌
+        // currentRound.clear();
     }
 
     private int calculateRoundPower(PlayedCards playedCards) {
@@ -316,9 +377,6 @@ public class GameRoom {
             }
         }
         return maxPower;
-    }
-
-    public synchronized void pass(String playerId) {
     }
 
     public synchronized void resetGame() {

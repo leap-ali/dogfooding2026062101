@@ -92,6 +92,72 @@ public class CardTypeUtil {
         return true;
     }
 
+    public static boolean isValidFollow(List<Card> playedCards, List<Card> leadCards, List<Card> handCardsBeforePlay, Suit trumpSuit, Rank levelRank) {
+        if (playedCards.size() != leadCards.size()) {
+            return false;
+        }
+        String leadType = getCardType(leadCards, trumpSuit, levelRank);
+        String playType = getCardType(playedCards, trumpSuit, levelRank);
+        Suit leadSuit = getLeadSuit(leadCards, trumpSuit);
+        boolean isTrumpLead = isTrumpSuit(leadSuit, trumpSuit, levelRank);
+        
+        if (isTrumpLead) {
+            boolean hasTrump = hasTrump(handCardsBeforePlay, trumpSuit, levelRank);
+            boolean allPlayedTrump = playedCards.stream().allMatch(c -> DeckUtil.isTrump(c, trumpSuit, levelRank));
+            if (hasTrump && !allPlayedTrump) {
+                return false;
+            }
+        } else {
+            boolean hasLeadSuit = hasSuit(handCardsBeforePlay, leadSuit);
+            boolean allPlayedLeadSuit = playedCards.stream().allMatch(c -> c.getSuit() == leadSuit);
+            if (hasLeadSuit && !allPlayedLeadSuit) {
+                return false;
+            }
+        }
+        
+        if (TYPE_PAIR.equals(leadType)) {
+            if (isTrumpLead) {
+                boolean hasTrumpPair = hasTrumpPair(handCardsBeforePlay, trumpSuit, levelRank);
+                if (hasTrumpPair) {
+                    boolean allTrump = playedCards.stream().allMatch(c -> DeckUtil.isTrump(c, trumpSuit, levelRank));
+                    if (!TYPE_PAIR.equals(playType) || !allTrump) {
+                        return false;
+                    }
+                }
+            } else {
+                boolean hasSuitPair = hasSuitPair(handCardsBeforePlay, leadSuit);
+                if (hasSuitPair) {
+                    boolean allLeadSuit = playedCards.stream().allMatch(c -> c.getSuit() == leadSuit);
+                    if (!TYPE_PAIR.equals(playType) || !allLeadSuit) {
+                        return false;
+                    }
+                }
+            }
+        }
+        
+        if (TYPE_TRIPLE.equals(leadType)) {
+            if (isTrumpLead) {
+                boolean hasTrumpTriple = hasTrumpTriple(handCardsBeforePlay, trumpSuit, levelRank);
+                if (hasTrumpTriple) {
+                    boolean allTrump = playedCards.stream().allMatch(c -> DeckUtil.isTrump(c, trumpSuit, levelRank));
+                    if (!TYPE_TRIPLE.equals(playType) || !allTrump) {
+                        return false;
+                    }
+                }
+            } else {
+                boolean hasSuitTriple = hasSuitTriple(handCardsBeforePlay, leadSuit);
+                if (hasSuitTriple) {
+                    boolean allLeadSuit = playedCards.stream().allMatch(c -> c.getSuit() == leadSuit);
+                    if (!TYPE_TRIPLE.equals(playType) || !allLeadSuit) {
+                        return false;
+                    }
+                }
+            }
+        }
+        
+        return true;
+    }
+
     public static Suit getLeadSuit(List<Card> leadCards, Suit trumpSuit) {
         for (Card card : leadCards) {
             if (!card.isJoker()) {

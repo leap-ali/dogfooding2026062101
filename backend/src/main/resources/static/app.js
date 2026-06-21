@@ -16,7 +16,6 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('skipDeclareBtn').addEventListener('click', skipDeclare);
     document.getElementById('confirmBottomBtn').addEventListener('click', confirmBottom);
     document.getElementById('playBtn').addEventListener('click', playCards);
-    document.getElementById('passBtn').addEventListener('click', passCards);
     document.getElementById('closeDeclareModal').addEventListener('click', closeDeclareModal);
     
     document.querySelectorAll('.suit-btn').forEach(btn => {
@@ -73,6 +72,9 @@ function joinRoom() {
 
 function setupSocketListeners() {
     socket.on('gameState', function(state) {
+        // #region debug-point H2,H3:game-state-received
+        console.log('[DEBUG] gameState received - phase=' + state.phase + ', currentPlayer=' + state.currentPlayerPosition + ', myPos=' + state.myPosition + ', currentRound=' + JSON.stringify(state.currentRound));
+        // #endregion
         gameState = state;
         renderGame();
     });
@@ -200,11 +202,18 @@ function getPositionMap(myPos) {
     if (myPos === undefined || myPos === null || myPos < 0) {
         return [0, 1, 2, 3];
     }
+    // #region debug-point H3:position-map
+    console.log('[DEBUG] getPositionMap called - myPos=' + myPos);
+    // #endregion
     const map = [];
-    map[0] = myPos;
-    map[1] = (myPos + 1) % 4;
-    map[2] = (myPos + 2) % 4;
-    map[3] = (myPos + 3) % 4;
+    map[0] = myPos;            // 底部: 我
+    // BUG 3 FIX: 左边是上家(逆时针=myPos+3)，右边是下家(顺时针=myPos+1)
+    map[1] = (myPos + 3) % 4;  // 左边: 我的上家 (逆时针方向)
+    map[2] = (myPos + 2) % 4;  // 顶部: 对家
+    map[3] = (myPos + 1) % 4;  // 右边: 我的下家 (顺时针方向)
+    // #region debug-point H3:position-map-result
+    console.log('[DEBUG] getPositionMap result - bottom=' + map[0] + ', left=' + map[1] + ', top=' + map[2] + ', right=' + map[3]);
+    // #endregion
     return map;
 }
 
@@ -361,13 +370,11 @@ function renderActionButtons() {
     const skipDeclareBtn = document.getElementById('skipDeclareBtn');
     const confirmBottomBtn = document.getElementById('confirmBottomBtn');
     const playBtn = document.getElementById('playBtn');
-    const passBtn = document.getElementById('passBtn');
     
     declareBtn.classList.add('hidden');
     skipDeclareBtn.classList.add('hidden');
     confirmBottomBtn.classList.add('hidden');
     playBtn.classList.add('hidden');
-    passBtn.classList.add('hidden');
     
     if (!gameState || gameState.phase === 'WAITING') {
         return;
@@ -469,12 +476,6 @@ function playCards() {
             showMessage('出牌失败: ' + msg);
         }
     });
-}
-
-function passCards() {
-    selectedCardIds = [];
-    renderHandCards();
-    renderActionButtons();
 }
 
 function leaveRoom() {
